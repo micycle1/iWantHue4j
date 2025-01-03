@@ -43,7 +43,7 @@ class ColorBlindSimulator {
 		double confuseYint = confusionLine.yint;
 
 		// Convert LAB to RGB
-		double[] rgb = Conversion.fromLabToRgb(lab); // Assuming fromRGB() exists and correctly implemented
+		double[] rgb = Conversion.labToRgb(lab); // Assuming fromRGB() exists and correctly implemented
 		double sr = rgb[0];
 		double sg = rgb[1];
 		double sb = rgb[2];
@@ -126,7 +126,7 @@ class ColorBlindSimulator {
 		db = sb / 255.0 * (1.0 - amount) + db * amount;
 
 		// Convert RGB to LAB
-		double[] result = Conversion.fromRgbToLab(new double[] { dr * 255.0, dg * 255.0, db * 255.0 });
+		double[] result = Conversion.rgbToLab(new double[] { dr * 255.0, dg * 255.0, db * 255.0 });
 
 //        simulateCache.put(key, result);
 

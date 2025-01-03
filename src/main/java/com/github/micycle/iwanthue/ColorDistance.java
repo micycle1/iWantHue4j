@@ -4,10 +4,10 @@ import java.util.Arrays;
 
 import static com.github.micycle.iwanthue.ColorBlindSimulator.ConfusionType;
 
-public class ColorDistance {
+class ColorDistance {
 
 	enum DistanceType {
-		DEFAULT, EUCLIDIAN, CMC, COMPROMISE;
+		DEFAULT, EUCLIDEAN, CMC, COMPROMISE;
 	}
 
 	public static double getColorDistance(double[] lab1, double[] lab2, DistanceType type) {
@@ -17,7 +17,7 @@ public class ColorDistance {
 
 		switch (type) {
 			case DEFAULT :
-			case EUCLIDIAN :
+			case EUCLIDEAN :
 				return euclidianDistance(lab1, lab2);
 			case CMC :
 				return cmcDistance(lab1, lab2, 2, 1);
@@ -68,6 +68,7 @@ public class ColorDistance {
 				distances[i + 1] = cmcDistance(lab1Cb, lab2Cb, 2, 1);
 				coeffs[i + 1] = c;
 			} else {
+				System.err.println("Colorblind sim failed.");
 				// If simulation failed (returned NaN), set distance and coeff to 0
 				// so they don't contribute to the average
 				distances[i + 1] = 0;
@@ -125,7 +126,7 @@ public class ColorDistance {
 		double[] labColor1 = { 50.0, 25.0, 25.0 };
 		double[] labColor2 = { 52.0, 23.0, 26.0 };
 
-		double euclidianDist = getColorDistance(labColor1, labColor2, DistanceType.EUCLIDIAN);
+		double euclidianDist = getColorDistance(labColor1, labColor2, DistanceType.EUCLIDEAN);
 		double cmcDist = getColorDistance(labColor1, labColor2, DistanceType.CMC);
 		double compromiseDist = getColorDistance(labColor1, labColor2, DistanceType.COMPROMISE);
 

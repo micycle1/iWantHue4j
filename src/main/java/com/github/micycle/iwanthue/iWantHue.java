@@ -7,15 +7,28 @@ import java.util.function.Predicate;
 
 import com.github.micycle.iwanthue.ColorDistance.DistanceType;
 
+/**
+ * @author Michael Carleton
+ */
 public class iWantHue {
-	
+
 	// https://medialab.github.io/iwanthue/js/libs/chroma.palette-gen.js
-	
+
 	public static void main(String[] args) {
-		List<double[]>  arrays = generate(2, null, false, 3, false, DistanceType.EUCLIDIAN);
-		arrays.forEach(array -> System.out.println(Arrays.toString(array)));
+		List<double[]> arrays = generate(20, null, false, 3, false, DistanceType.EUCLIDEAN);
+		arrays.forEach(array -> System.out.println(Arrays.toString(Conversion.labToRgb(array))));
 	}
 
+	/**
+	 * 
+	 * @param colorsCount
+	 * @param checkColorIn
+	 * @param forceMode
+	 * @param quality
+	 * @param ultraPrecision
+	 * @param distanceType
+	 * @return list of [L,A,B]
+	 */
 	public static List<double[]> generate(int colorsCount, Predicate<double[]> checkColorIn, boolean forceMode, int quality,
 			boolean ultraPrecision, DistanceType distanceType) {
 		// Default values
@@ -34,8 +47,8 @@ public class iWantHue {
 
 			// It will be necessary to check if a Lab color exists in the rgb space.
 			Predicate<double[]> checkLab = (lab) -> {
-				double[] rgb = Conversion.fromLabToRgb(lab);
-				return LabValidator.validateLab(lab) && checkColor.test(rgb);
+				double[] rgb = Conversion.labToRgb(lab);
+				return Conversion.validateLab(lab) && checkColor.test(rgb);
 			};
 
 			// Init
@@ -106,9 +119,9 @@ public class iWantHue {
 			Predicate<double[]> checkColor2 = (lab) -> {
 				// Check that a color is valid: it must verify our checkColor condition, but
 				// also be in the color space
-				double[] rgb = Conversion.fromLabToRgb(lab);
+				double[] rgb = Conversion.labToRgb(lab);
 
-				return LabValidator.validateLab(lab) && checkColor.test(rgb);
+				return Conversion.validateLab(lab) && checkColor.test(rgb);
 			};
 
 			List<double[]> kMeans = new ArrayList<>();
