@@ -1,12 +1,13 @@
-package com.github.micycle.iwanthue;
+package com.github.micycle1.iwanthue;
+
+import static com.github.micycle1.iwanthue.ColorBlindSimulator.ConfusionType;
 
 import java.util.Arrays;
-
-import static com.github.micycle.iwanthue.ColorBlindSimulator.ConfusionType;
 
 class ColorDistance {
 
 	enum DistanceType {
+		// TODO add CIEDE2000
 		DEFAULT, EUCLIDEAN, CMC, COMPROMISE;
 	}
 
@@ -45,7 +46,7 @@ class ColorDistance {
 		coeffs[0] = 1000;
 
 		ConfusionType[] types = ConfusionType.values();
-		
+
 		for (int i = 0; i < types.length; i++) {
 			double[] lab1Cb = ColorBlindSimulator.simulate(lab1, types[i]);
 			double[] lab2Cb = ColorBlindSimulator.simulate(lab2, types[i]);
@@ -87,9 +88,20 @@ class ColorDistance {
 	}
 
 	private static double euclidianDistance(double[] lab1, double[] lab2) {
-		return Math.sqrt(Math.pow(lab1[0] - lab2[0], 2) + Math.pow(lab1[1] - lab2[1], 2) + Math.pow(lab1[2] - lab2[2], 2));
+		double delta0 = lab1[0] - lab2[0];
+		double delta1 = lab1[1] - lab2[1];
+		double delta2 = lab1[2] - lab2[2];
+		return Math.sqrt(delta0 * delta0 + delta1 * delta1 + delta2 * delta2);
 	}
 
+	/**
+	 * 
+	 * @param lab1
+	 * @param lab2
+	 * @param l    lightness weighting
+	 * @param c    chroma weighting
+	 * @return
+	 */
 	private static double cmcDistance(double[] lab1, double[] lab2, double l, double c) {
 		double L1 = lab1[0];
 		double L2 = lab2[0];

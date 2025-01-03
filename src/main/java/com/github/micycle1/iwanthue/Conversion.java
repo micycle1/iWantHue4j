@@ -1,4 +1,4 @@
-package com.github.micycle.iwanthue;
+package com.github.micycle1.iwanthue;
 
 class Conversion {
 

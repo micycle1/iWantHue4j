@@ -1,11 +1,16 @@
-package com.github.micycle.iwanthue;
+package com.github.micycle1.iwanthue;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.github.micycle.iwanthue.ColorDistance.DistanceType;
+import javax.imageio.ImageIO;
+
+import com.github.micycle1.iwanthue.ColorDistance.DistanceType;
 
 /**
  * @author Michael Carleton
@@ -14,20 +19,42 @@ public class iWantHue {
 
 	// https://medialab.github.io/iwanthue/js/libs/chroma.palette-gen.js
 
-	public static void main(String[] args) {
-		List<double[]> arrays = generate(20, null, false, 3, false, DistanceType.EUCLIDEAN);
-		arrays.forEach(array -> System.out.println(Arrays.toString(Conversion.labToRgb(array))));
+	public static void main(String[] args) throws IOException {
+		List<double[]> arrays = generate(11, null, false, 50, false, DistanceType.CMC);
+		List<double[]> rgbColors = arrays.stream().map(Conversion::labToRgb).toList(); // Use toList() in Java 17
+
+		int w = 25;
+		int width = w * rgbColors.size();
+		int height = 100;
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		var g2d = image.createGraphics(); // Use var for type inference in Java 17
+
+		int x = 0;
+		for (double[] rgb : rgbColors) {
+			g2d.setColor(new java.awt.Color((int) rgb[0], (int) rgb[1], (int) rgb[2]));
+			g2d.fillRect(x, 0, w, height);
+			x += w;
+		}
+		g2d.dispose();
+
+		ImageIO.write(image, "png", new File("palette.png"));
+		System.out.println("done");
 	}
 
 	/**
 	 * 
-	 * @param colorsCount
-	 * @param checkColorIn
-	 * @param forceMode
-	 * @param quality
-	 * @param ultraPrecision
-	 * @param distanceType
-	 * @return list of [L,A,B]
+	 * @param colorsCount number of colors in the generated palette.
+	 * @param checkColorIn   Function used to filter suitable colors. Takes a [r, g,
+	 *                       b] color and the same [l, a, b] color as arguments.
+	 * @param forceMode      Clustering method to use. Can either be k-means or
+	 *                       force-vector.
+	 * @param quality        Quality of the clustering: iterations factor for
+	 *                       force-vector, colorspace sampling for k-means.
+	 * @param ultraPrecision Ultra precision for k-means colorspace sampling?
+	 * @param distanceType   Distance function to use. Can be euclidean, cmc,
+	 *                       compromise (colorblind), protanope, deuteranope or
+	 *                       tritanope
+	 * @return list of [L,A,B] vectors
 	 */
 	public static List<double[]> generate(int colorsCount, Predicate<double[]> checkColorIn, boolean forceMode, int quality,
 			boolean ultraPrecision, DistanceType distanceType) {
